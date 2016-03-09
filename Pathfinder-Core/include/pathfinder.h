@@ -8,4 +8,6 @@
 #include "pathfinder/spline.h"
 #include "pathfinder/trajectory.h"
 
+#include "pathfinder/modifiers/tank.h"
+
 #endif

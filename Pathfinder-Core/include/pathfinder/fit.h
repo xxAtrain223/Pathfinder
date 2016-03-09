@@ -1,5 +1,5 @@
-#ifndef FIT_H_DEF
-#define FIT_H_DEF
+#ifndef PATHFINDER_FIT_H_DEF
+#define PATHFINDER_FIT_H_DEF
 
 void pf_fit_hermite_pre(Waypoint a, Waypoint b, Spline *s);
 void pf_fit_hermite_cubic(Waypoint a, Waypoint b, Spline *s);

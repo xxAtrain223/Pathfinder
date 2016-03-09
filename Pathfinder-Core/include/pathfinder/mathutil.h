@@ -1,7 +1,7 @@
 #include <math.h>
 
-#ifndef MATH_UTIL_H_DEF
-#define MATH_UTIL_H_DEF
+#ifndef PATHFINDER_MATH_UTIL_H_DEF
+#define PATHFINDER_MATH_UTIL_H_DEF
 
 #define PI 3.14159265358979323846
 #define TAU PI*2
