@@ -6,10 +6,10 @@ TARGET=pathfinder
 C=src
 HEAD=include
 
-CFLAGS=-shared -I$(HEAD) -g -pthread -lm
+CFLAGS=-shared -I$(HEAD) -g -lm
 LDFLAGS=-shared
 
-SRCS=$(C)/fit/hermite.c $(C)/mathutil.c $(C)/spline.c $(C)/trajectory.c $(C)/generator.c $(C)/modifiers/tank.c $(C)/threading/threadpool.c
+SRCS=$(C)/fit/hermite.c $(C)/mathutil.c $(C)/spline.c $(C)/trajectory.c $(C)/generator.c $(C)/modifiers/tank.c
 OBJS=$(SRCS:.c=.o)
 
 ifeq ($(OS),Windows_NT)
