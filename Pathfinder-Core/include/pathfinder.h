@@ -9,5 +9,6 @@
 #include "pathfinder/trajectory.h"
 
 #include "pathfinder/modifiers/tank.h"
+#include "pathfinder/modifiers/swerve.h"
 
 #endif

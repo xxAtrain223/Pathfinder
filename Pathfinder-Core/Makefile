@@ -9,7 +9,7 @@ HEAD=include
 CFLAGS=-shared -I$(HEAD) -g -lm
 LDFLAGS=-shared
 
-SRCS=$(C)/fit/hermite.c $(C)/mathutil.c $(C)/spline.c $(C)/trajectory.c $(C)/generator.c $(C)/modifiers/tank.c
+SRCS=$(C)/fit/hermite.c $(C)/mathutil.c $(C)/spline.c $(C)/trajectory.c $(C)/generator.c $(C)/modifiers/tank.c $(C)/modifiers/swerve.c
 OBJS=$(SRCS:.c=.o)
 
 ifeq ($(OS),Windows_NT)
