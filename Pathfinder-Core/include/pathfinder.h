@@ -1,6 +1,7 @@
 #ifndef PATHFINDER_H_DEF
 #define PATHFINDER_H_DEF
 
+#include "pathfinder/threading/threadpool.h"
 #include "pathfinder/mathutil.h"
 #include "pathfinder/structs.h"
 
