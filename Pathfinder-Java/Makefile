@@ -4,22 +4,27 @@ CC=gcc
 DESTDIR?=/usr
 PREFIX?=/local
 
-TARGET=pathfinder
+TARGET=pathfinderjava
 
-C=src
-HEAD=include
+C=src/native/c
+HEAD=src/native/include
+JNI_HEAD=src/native/jni_include
 
-CFLAGS=-shared -I$(HEAD) -g -lm
+CFLAGS=-shared -I$(HEAD) -I$(JNI_HEAD) -I"$(JAVA_HOME)/include" -g -lm -lpathfinder -L../Pathfinder-Core -I../Pathfinder-Core/include 
 LDFLAGS=-shared
 
-SRCS=$(C)/fit/hermite.c $(C)/mathutil.c $(C)/spline.c $(C)/trajectory.c $(C)/generator.c $(C)/modifiers/tank.c $(C)/modifiers/swerve.c
-HEADERS=$(HEAD)/pathfinder/fit.h $(HEAD)/pathfinder/mathutil.h $(HEAD)/pathfinder/spline.h \
-	$(HEAD)/pathfinder/structs.h $(HEAD)/pathfinder/trajectory.h $(HEAD)/pathfinder/modifiers/swerve.h $(HEAD)/pathfinder/modifiers/tank.h \
-    $(HEAD)/pathfinder.h    
+JNI_HEADERS = jaci.pathfinder.PathfinderJNI
+
+SRCS=$(C)/pathfinder_java.c
+HEADERS=
 OBJS=$(SRCS:.c=.o)
+
+GRADLE=./gradlew
 
 ifeq ($(OS),Windows_NT)
     EXTTXT := dll
+    GRADLE = gradlew
+    CFLAGS += -I"$(JAVA_HOME)/include/win32"
 else
     EXTTXT := so
     PRETXT := lib
@@ -33,10 +38,16 @@ TARGET_NAME=$(PRETXT)$(TARGET).$(EXTTXT)
 
 -include $(OBJS:.o=.d)
 
-all: $(TARGET)
+all: generate prepare $(TARGET)
+
+generate:
+	javah -cp build/classes/main -d $(JNI_HEAD) $(JNI_HEADERS)
+
+prepare:
+	mkdir -p build/c
 
 $(TARGET): $(OBJS)
-	$(CC) $(CFLAGS) -o $(TARGET_NAME) $(OBJS)
+	$(CC) $(CFLAGS) -o build/c/$(TARGET_NAME) $(OBJS)
 
 clean: $(OBJS)
 	rm -rf $(OBJS) $(TARGET_NAME)
@@ -50,3 +61,4 @@ install: $(all)
 uninstall:
 	cd $(DESTDIR)$(PREFIX)/include/ && rm -f $(HEADERS)
 	cd $(DESTDIR)$(PREFIX)/lib/ && rm -f $(TARGET_NAME)
+

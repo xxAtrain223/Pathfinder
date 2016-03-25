@@ -30,3 +30,7 @@
 
 # Debug files
 *.dSYM/
+Pathfinder-Java/build/
+Pathfinder-Java/out/
+*.csv
+Pathfinder-Java/.gradle/
