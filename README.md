@@ -1,2 +1,2 @@
 # Pathfinder
-Cross-Platform, Multi-Use Spline and Motion Profiling Generation Library
+Cross-Platform, Multi-Use Motion Profiling and Trajectory Generation.
