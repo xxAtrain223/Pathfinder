@@ -11,10 +11,11 @@ public class TankModifier {
         this.source = source;
     }
 
-    public void modify(double wheelbase_width) {
+    public TankModifier modify(double wheelbase_width) {
         Trajectory[] trajs = PathfinderJNI.modifyTrajectoryTank(source, wheelbase_width);
         left = trajs[0];
         right = trajs[1];
+        return this;
     }
 
     public Trajectory getSourceTrajectory() {

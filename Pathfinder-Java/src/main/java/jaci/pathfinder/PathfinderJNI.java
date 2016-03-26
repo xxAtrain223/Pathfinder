@@ -17,8 +17,10 @@ public class PathfinderJNI {
 
                 if (os.startsWith("Windows"))
                     resolvedName = "/Win/" + System.getProperty("os.arch") + "/";
+                else if (os.toLowerCase().contains("mac"))
+                    resolvedName = "/Mac/" + System.getProperty("os.arch") + "/";
                 else
-                    resolvedName = "/" + os + "/" + System.getProperty("os.arch") + "/";
+                    resolvedName = "/Linux/" + System.getProperty("os.arch") + "/";
 
                 loadLibrary(resolvedName, "pathfinder", "pathfinderCORE");
                 loadLibrary(resolvedName, "pathfinderjava", "pathfinderJNI");

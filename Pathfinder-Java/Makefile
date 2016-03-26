@@ -25,13 +25,16 @@ ifeq ($(OS),Windows_NT)
     EXTTXT := dll
     GRADLE = gradlew
     CFLAGS += -I"$(JAVA_HOME)/include/win32"
+    OSSTR := Win
 else
     EXTTXT := so
     PRETXT := lib
+    OSSTR := Linux
 endif
 
 ifeq ($(shell uname -s),Darwin)
     EXTTXT := dylib
+    OSSTR := Mac
 endif
 
 TARGET_NAME=$(PRETXT)$(TARGET).$(EXTTXT)
@@ -61,4 +64,3 @@ install: $(all)
 uninstall:
 	cd $(DESTDIR)$(PREFIX)/include/ && rm -f $(HEADERS)
 	cd $(DESTDIR)$(PREFIX)/lib/ && rm -f $(TARGET_NAME)
-

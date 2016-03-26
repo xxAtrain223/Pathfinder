@@ -10,3 +10,9 @@ dependencies { }
 task wrapper(type: Wrapper) {
     gradleVersion = '2.12'
 }
+
+task compile_native(type: Exec) {
+    commandLine 'make'
+}
+
+jar.dependsOn compile_native
