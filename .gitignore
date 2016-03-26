@@ -34,3 +34,5 @@ Pathfinder-Java/build/
 Pathfinder-Java/out/
 *.csv
 Pathfinder-Java/.gradle/
+Pathfinder-Core/build/
+.gradle/

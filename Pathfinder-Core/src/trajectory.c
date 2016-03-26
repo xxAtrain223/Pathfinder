@@ -1,3 +1,5 @@
+#include <stdlib.h>
+
 #include "pathfinder.h"
 
 void pf_trajectory_copy(Segment *src, Segment *dest, int length) {
@@ -52,7 +54,8 @@ void pf_trajectory_fromSecondOrderFilter(int filter_1_l, int filter_2_l,
         double dt, double u, double v, double impulse, int len, Segment *t) {
     Segment last_section = {dt, 0, 0, 0, u, 0, 0};
     
-    double f1_buffer[len];
+    // double f1_buffer[len];
+    double *f1_buffer = malloc(len * sizeof(double));       // VS doesn't support VLAs
     f1_buffer[0] = (u / v) * filter_1_l;
     double f2;
     
@@ -97,4 +100,5 @@ void pf_trajectory_fromSecondOrderFilter(int filter_1_l, int filter_2_l,
 
         last_section = t[i];
     }
+    free(f1_buffer);
 }

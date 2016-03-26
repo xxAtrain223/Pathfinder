@@ -1,0 +1,106 @@
+apply plugin: 'c'
+
+def nativeDir = 'src/native'
+
+ext.getPlatformPath = { binary ->
+    if (binary.targetPlatform.architecture.arm) {
+        return 'Linux/arm'
+    } else if (binary.targetPlatform.operatingSystem.linux) {
+        if (binary.targetPlatform.architecture.amd64) {
+            return 'Linux/amd64'
+        } else {
+            return 'Linux/' + binary.targetPlatform.architecture.name
+        }
+    } else if (binary.targetPlatform.operatingSystem.windows) {
+        if (binary.targetPlatform.architecture.amd64) {
+            return 'Win/amd64'
+        } else {
+            return 'Win/' + binary.targetPlatform.architecture.name
+        }
+    } else if (binary.targetPlatform.operatingSystem.macOsX) {
+        if (binary.targetPlatform.architecture.amd64) {
+            return 'Mac/x86_64'
+        } else {
+            return 'Mac/' + binary.targetPlatform.architecture.name
+        }
+    } else {
+        return binary.targetPlatform.operatingSystem.name + '/' + binary.targetPlatform.architecture.name
+    }
+}
+
+model {
+    components {
+        pathfinderjava(NativeLibrarySpec) {
+            if (isArm) {
+                targetPlatform 'arm'
+            } else {
+                targetPlatform 'x86'
+                targetPlatform 'x64'
+            }
+            
+            binaries.all {
+                tasks.withType(CCompile) {
+                    dependsOn jniHeaders
+                    def javahome = org.gradle.internal.jvm.Jvm.current().javaHome
+                    
+                    cCompiler.args '-I', "${javahome}/include"
+                    if (targetPlatform.operatingSystem.windows)
+                        cCompiler.args '-I', "${javahome}/include/win32"
+                    else if (targetPlatform.operatingSystem.macOsX)
+                        cCompiler.args '-I', "${javahome}/include/darwin"
+                    else if (targetPlatform.operatingSystem.linux)
+                        cCompiler.args '-I', "${javahome}/include/linux"
+                    // cCompiler.args << '-L"' + javahome + '/lib"'
+                    
+                    if (isArm) {
+                        cCompiler.args '-I', file('../Pathfinder-Java/arm-linux').absolutePath
+                        cCompiler.args '-I', file('../Pathfinder-Java/arm-linux/linux').absolutePath
+                    }
+                }
+            }
+            
+            sources {
+                c {
+                    source {
+                        srcDirs = ["$nativeDir/c"]
+                        includes  = ['**/*.c']
+                    }
+                    exportedHeaders {
+                        srcDirs = ["$nativeDir/include"]
+                        jniHeaders.outputs.files.each { file ->
+                            srcDirs file.getPath()
+                        }
+                    }
+                    lib project: ':Pathfinder-Core', library: 'pathfinder', linkage: 'static'
+                }
+            }
+        }
+    }
+}
+
+task jniHeaders {
+    description = "Generate JNI Headers from the PathfinderJNI"
+    group = "Pathfinder"
+    
+    def outputFolder = file("$nativeDir/jni_headers")
+    inputs.files sourceSets.main.output
+    outputs.file outputFolder
+    
+    doLast {
+        outputFolder.mkdirs()
+        exec {
+            executable org.gradle.internal.jvm.Jvm.current().getExecutable('javah')
+            args '-d', outputFolder
+            args '-cp', sourceSets.main.output.classesDir
+            args 'jaci.pathfinder.PathfinderJNI'
+        }
+    }
+}
+
+// task depsJar(type: Zip) {
+//     project.binaries.withType(SharedLibraryBinarySpec) { bin ->
+//         from (bin.sharedLibraryFile) {
+//             into getPlatformPath()
+//         }
+//     }
+// }

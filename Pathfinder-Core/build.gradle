@@ -1,0 +1,26 @@
+apply plugin: 'c'
+
+model {
+    components {
+        pathfinder(NativeLibrarySpec) {
+            if (isArm) {
+                targetPlatform 'arm'
+            } else {
+                targetPlatform 'x86'
+                targetPlatform 'x64'
+            }
+            
+            sources {
+                c {
+                    source {
+                        srcDirs = ['src']
+                        includes = ['**/*.c']
+                    }
+                    exportedHeaders {
+                        srcDirs = ['include']
+                    }
+                }
+            }
+        }
+    }
+}

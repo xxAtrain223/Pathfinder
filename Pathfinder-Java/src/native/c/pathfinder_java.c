@@ -1,4 +1,5 @@
 #include <jni.h>
+#include <stdlib.h>
 #include <pathfinder.h>
 
 #include "jaci_pathfinder_PathfinderJNI.h"
@@ -74,7 +75,8 @@ JNIEXPORT jobjectArray JNICALL Java_jaci_pathfinder_PathfinderJNI_generateTrajec
     
     int point_length = (*env)->GetArrayLength(env, waypoints);
     int i;
-    Waypoint points[point_length];
+    // Waypoint points[point_length];
+    Waypoint *points = malloc(point_length * sizeof(Waypoint));
     
     for (i = 0; i < point_length; i++) {
         jobject wpobj = (jobject) (*env)->GetObjectArrayElement(env, waypoints, i);
@@ -91,9 +93,10 @@ JNIEXPORT jobjectArray JNICALL Java_jaci_pathfinder_PathfinderJNI_generateTrajec
     pathfinder_prepare(points, point_length, fitm, samples, dt, max_velocity, max_acceleration, max_jerk, &cd);
     
     int len = cd.length;
-    Segment segs[len];
+    // Segment segs[len];
+    Segment *segs = malloc(len * sizeof(Segment));
     
-    pathfinder_generate(&cd, &segs);
+    pathfinder_generate(&cd, segs);
     
     jclass cls = (*env)->FindClass(env, "jaci/pathfinder/Trajectory$Segment");
     jmethodID constructor = (*env)->GetMethodID(env, cls, "<init>", "(DDDDDDDD)V");
@@ -105,6 +108,8 @@ JNIEXPORT jobjectArray JNICALL Java_jaci_pathfinder_PathfinderJNI_generateTrajec
         jobject jseg = (*env)->NewObject(env, cls, constructor, s.dt, s.x, s.y, s.position, s.velocity, s.acceleration, s.jerk, s.heading);
         (*env)->SetObjectArrayElement(env, newArray, i, jseg);
     }
+    
+    free(points); free(segs);
     
     return newArray;
 }
@@ -123,7 +128,8 @@ JNIEXPORT jobjectArray JNICALL Java_jaci_pathfinder_PathfinderJNI_modifyTrajecto
   (JNIEnv *env, jclass thisCls, jobjectArray source, jdouble wheelbase_width) {
     
     int length = (*env)->GetArrayLength(env, source);
-    Segment segs[length];
+    // Segment segs[length];
+    Segment *segs = malloc(length * sizeof(Segment));
     
     int i;
     for (i = 0; i < length; i++) {
@@ -141,8 +147,11 @@ JNIEXPORT jobjectArray JNICALL Java_jaci_pathfinder_PathfinderJNI_modifyTrajecto
         segs[i] = s;
     }
     
-    Segment left[length];
-    Segment right[length];
+    // Segment left[length];
+    // Segment right[length];
+    
+    Segment *left = malloc(length * sizeof(Segment));
+    Segment *right = malloc(length * sizeof(Segment));
     
     pathfinder_modify_tank(segs, length, left, right, wheelbase_width);
     
@@ -162,6 +171,8 @@ JNIEXPORT jobjectArray JNICALL Java_jaci_pathfinder_PathfinderJNI_modifyTrajecto
         (*env)->SetObjectArrayElement(env, leftArray, i, jlseg);
         (*env)->SetObjectArrayElement(env, rightArray, i, jrseg);
     }
+    
+    free(segs); free(left); free(right);
     
     cls = (*env)->FindClass(env, "[Ljaci/pathfinder/Trajectory$Segment;");
     jobjectArray returnArray = (*env)->NewObjectArray(env, 2, cls, NULL);
@@ -188,7 +199,8 @@ JNIEXPORT jobjectArray JNICALL Java_jaci_pathfinder_PathfinderJNI_modifyTrajecto
   (JNIEnv *env, jclass thisCls, jobjectArray source, jdouble wheelbase_width, jdouble wheelbase_depth, jobject mode) {
     
     int length = (*env)->GetArrayLength(env, source);
-    Segment segs[length];
+    // Segment segs[length];
+    Segment *segs = malloc(length * sizeof(Segment));
     
     int i;
     for (i = 0; i < length; i++) {
@@ -206,10 +218,15 @@ JNIEXPORT jobjectArray JNICALL Java_jaci_pathfinder_PathfinderJNI_modifyTrajecto
         segs[i] = s;
     }
     
-    Segment fl[length];
-    Segment fr[length];
-    Segment bl[length];
-    Segment br[length];
+    // Segment fl[length];
+    // Segment fr[length];
+    // Segment bl[length];
+    // Segment br[length];
+    
+    Segment *fl = malloc(length * sizeof(Segment));
+    Segment *fr = malloc(length * sizeof(Segment));
+    Segment *bl = malloc(length * sizeof(Segment));
+    Segment *br = malloc(length * sizeof(Segment));
     
     SWERVE_MODE smode = getSwerveMode(env, mode);
     pathfinder_modify_swerve(segs, length, fl, fr, bl, br, wheelbase_width, wheelbase_depth, smode);
@@ -238,6 +255,8 @@ JNIEXPORT jobjectArray JNICALL Java_jaci_pathfinder_PathfinderJNI_modifyTrajecto
         (*env)->SetObjectArrayElement(env, bla, i, jbl);
         (*env)->SetObjectArrayElement(env, bra, i, jbr);
     }
+    
+    free(segs); free(fl); free(fr); free(bl); free(br);
     
     cls = (*env)->FindClass(env, "[Ljaci/pathfinder/Trajectory$Segment;");
     jobjectArray returnArray = (*env)->NewObjectArray(env, 4, cls, NULL);

@@ -22,7 +22,7 @@ public class PathfinderJNI {
                 else
                     resolvedName = "/Linux/" + System.getProperty("os.arch") + "/";
 
-                loadLibrary(resolvedName, "pathfinder", "pathfinderCORE");
+//                loadLibrary(resolvedName, "pathfinder", "pathfinderCORE");
                 loadLibrary(resolvedName, "pathfinderjava", "pathfinderJNI");
             } catch (IOException e) {
                 e.printStackTrace();
