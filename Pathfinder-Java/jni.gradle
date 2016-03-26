@@ -1,27 +1,29 @@
 apply plugin: 'c'
 
 def nativeDir = 'src/native'
+def sharedArtifactDir = 'build/libs/pathfinderjava/shared/platform'
+def exportDir = 'src/main/resources'
 
 ext.getPlatformPath = { binary ->
     if (binary.targetPlatform.architecture.arm) {
-        return 'Linux/arm'
+        return "Linux/arm"
     } else if (binary.targetPlatform.operatingSystem.linux) {
         if (binary.targetPlatform.architecture.amd64) {
-            return 'Linux/amd64'
+            return "Linux/amd64"
         } else {
-            return 'Linux/' + binary.targetPlatform.architecture.name
+            return "Linux/" + binary.targetPlatform.architecture.name
         }
     } else if (binary.targetPlatform.operatingSystem.windows) {
         if (binary.targetPlatform.architecture.amd64) {
-            return 'Win/amd64'
+            return "Win/amd64"
         } else {
-            return 'Win/' + binary.targetPlatform.architecture.name
+            return "Win/" + binary.targetPlatform.architecture.name
         }
     } else if (binary.targetPlatform.operatingSystem.macOsX) {
         if (binary.targetPlatform.architecture.amd64) {
-            return 'Mac/x86_64'
+            return "Mac/x86_64"
         } else {
-            return 'Mac/' + binary.targetPlatform.architecture.name
+            return "Mac/" + binary.targetPlatform.architecture.name
         }
     } else {
         return binary.targetPlatform.operatingSystem.name + '/' + binary.targetPlatform.architecture.name
@@ -36,6 +38,12 @@ model {
             } else {
                 targetPlatform 'x86'
                 targetPlatform 'x64'
+            }
+            
+            binaries.withType(SharedLibraryBinarySpec) { binary ->
+                def slf = binary.sharedLibraryFile
+                def newfile = new File(new File(file(sharedArtifactDir), getPlatformPath(binary)), slf.name)
+                binary.sharedLibraryFile = newfile
             }
             
             binaries.all {
@@ -97,10 +105,14 @@ task jniHeaders {
     }
 }
 
-// task depsJar(type: Zip) {
-//     project.binaries.withType(SharedLibraryBinarySpec) { bin ->
-//         from (bin.sharedLibraryFile) {
-//             into getPlatformPath()
-//         }
-//     }
-// }
+task libraryExport << {
+    description = "Export Native Libraries to the resources/ directory of the Jar"
+    group = "Pathfinder"
+    
+    copy {
+        from sharedArtifactDir
+        into exportDir
+    }
+}
+
+processResources.dependsOn libraryExport
