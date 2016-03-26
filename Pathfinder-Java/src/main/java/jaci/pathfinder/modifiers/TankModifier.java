@@ -22,11 +22,11 @@ public class TankModifier {
         return source;
     }
 
-    public Trajectory getLeft() {
+    public Trajectory getLeftTrajectory() {
         return left;
     }
 
-    public Trajectory getRight() {
+    public Trajectory getRightTrajectory() {
         return right;
     }
 

@@ -6,8 +6,8 @@ int pathfinder_prepare(Waypoint *path, int path_length, void (*fit)(Waypoint,Way
         double max_velocity, double max_acceleration, double max_jerk, TrajectoryCandidate *cand) {
     if (path_length < 2) return -1;
     
-    Spline *splines = malloc((path_length - 1) * sizeof(Spline));
-    double *splineLengths = malloc((path_length - 1) * sizeof(double));
+    cand->saptr = malloc((path_length - 1) * sizeof(Spline));
+    cand->laptr = malloc((path_length - 1) * sizeof(double));
     double totalLength = 0;
     
     int i;
@@ -15,8 +15,8 @@ int pathfinder_prepare(Waypoint *path, int path_length, void (*fit)(Waypoint,Way
         Spline s;
         fit(path[i], path[i+1], &s);
         double dist = pf_spline_distance(&s, sample_count);
-        splines[i] = s;
-        splineLengths[i] = dist;
+        cand->saptr[i] = s;
+        cand->laptr[i] = dist;
         totalLength += dist;
     }
     
@@ -25,8 +25,6 @@ int pathfinder_prepare(Waypoint *path, int path_length, void (*fit)(Waypoint,Way
     TrajectoryInfo info = pf_trajectory_prepare(config);
     int trajectory_length = info.length;
     
-    cand->saptr = &splines;
-    cand->laptr = &splineLengths;
     cand->totalLength = totalLength;
     cand->length = trajectory_length;
     cand->path_length = path_length;
@@ -41,8 +39,8 @@ int pathfinder_generate(TrajectoryCandidate *c, Segment *segments) {
     int path_length = c->path_length;
     double totalLength = c->totalLength;
     
-    Spline *splines = *(c->saptr);
-    double *splineLengths = *(c->laptr);
+    Spline *splines = (c->saptr);
+    double *splineLengths = (c->laptr);
     
     pf_trajectory_create(c->info, c->config, segments);
     
@@ -78,6 +76,9 @@ int pathfinder_generate(TrajectoryCandidate *c, Segment *segments) {
             }
         }
     }
+    
+    free(splines);
+    free(splineLengths);
     
     return trajectory_length;
 }

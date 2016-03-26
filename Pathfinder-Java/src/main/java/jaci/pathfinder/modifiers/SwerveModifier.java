@@ -28,19 +28,19 @@ public class SwerveModifier {
         return source;
     }
 
-    public Trajectory getFrontLeft() {
+    public Trajectory getFrontLeftTrajectory() {
         return fl;
     }
 
-    public Trajectory getFrontRight() {
+    public Trajectory getFrontRightTrajectory() {
         return fr;
     }
 
-    public Trajectory getBackLeft() {
+    public Trajectory getBackLeftTrajectory() {
         return bl;
     }
 
-    public Trajectory getBackRight() {
+    public Trajectory getBackRightTrajectory() {
         return br;
     }
 

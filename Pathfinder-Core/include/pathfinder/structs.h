@@ -29,8 +29,8 @@ typedef struct {
 } TrajectoryInfo;
 
 typedef struct {
-    Spline **saptr;
-    double **laptr;
+    Spline *saptr;
+    double *laptr;
     double totalLength;
     int length;
     int path_length;

@@ -75,7 +75,6 @@ JNIEXPORT jobjectArray JNICALL Java_jaci_pathfinder_PathfinderJNI_generateTrajec
     
     int point_length = (*env)->GetArrayLength(env, waypoints);
     int i;
-    // Waypoint points[point_length];
     Waypoint *points = malloc(point_length * sizeof(Waypoint));
     
     for (i = 0; i < point_length; i++) {
