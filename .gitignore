@@ -25,3 +25,4 @@ Pathfinder-Java/.gradle/
 Pathfinder-Core/build/
 .gradle/
 out/
+.idea
