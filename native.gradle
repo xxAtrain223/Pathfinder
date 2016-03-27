@@ -64,3 +64,38 @@ subprojects {
         }
     }
 }
+
+project.ext.installBinary = { binary, headers ->
+    def allHeaders = fileTree(dir: headers.absolutePath, include: '**/*.h').getFiles().collect { file ->
+        file.absolutePath
+    }
+    
+    def prefix = "/usr/local"
+    if (project.hasProperty("prefix")) prefix = project.prefix
+    
+    if (allHeaders.size > 0) {
+        exec {
+            executable "install"
+            args "-m", "0755", "-d", "$prefix/include"
+        }
+        
+        def arrg = ["-m", "0644"]
+        arrg += allHeaders
+        arrg += "$prefix/include"
+        
+        exec {
+            executable "install"
+            args = arrg
+        }
+    }
+    
+    exec {
+        executable "install"
+        args "-m", "0755", "-d", "$prefix/lib"
+    }
+    
+    exec {
+        executable "install"
+        args "-m", "0755", "${binary.absolutePath}", "$prefix/lib"
+    }
+}

@@ -45,3 +45,31 @@ This will build for both the x64 and x86 architecture for your platform. To cros
 ./gradlew build -Parm -PcompilerPrefix=arm-linux-gnueabi
 ./gradlew assemble
 ```
+
+## Installing on your Architecture
+If your OS or Architecture doesn't fall under the prebuilt binaries that are available with the library, you can 
+install pathfinder's native binaries onto your local system manually. This will allow you to include the library
+in any project you want
+
+64-Bit
+```java
+./gradlew install
+```
+
+32-Bit
+```java
+./gradlew install -P32
+```
+
+If you want to change the prefix location (by default it is `/usr/local`), you can pass the `prefix` property:
+```java
+./gradlew install -Pprefix=<your prefix location>
+```
+
+## Usage
+To see the usage for each language variation of the API, see the README in their folder.
+
+| Language | Folder |
+| -------- | ------ |
+| C        | [Pathfinder-Core](Pathfinder-Core/) |
+| Java     | [Pathfinder-Java](Pathfinder-Java/) |

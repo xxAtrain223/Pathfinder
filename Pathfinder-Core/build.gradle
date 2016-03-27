@@ -10,6 +10,17 @@ model {
                 targetPlatform 'x64'
             }
             
+            project.ext.binaries = []
+            
+            binaries.withType(SharedLibraryBinarySpec) { bin ->
+                if (bin.targetPlatform.operatingSystem.isCurrent()) {
+                    if (project.hasProperty("32") && !bin.targetPlatform.architecture.name.contains("64"))
+                        project.ext.binaries << bin.sharedLibraryFile
+                    else if (!project.hasProperty("32") && bin.targetPlatform.architecture.name.contains("64"))
+                        project.ext.binaries << bin.sharedLibraryFile
+                }
+            }
+            
             sources {
                 c {
                     source {
@@ -21,6 +32,16 @@ model {
                     }
                 }
             }
+        }
+    }
+    
+}
+
+task install() {
+    doLast {
+        binaries.each { binary ->
+            println "Installing Binary: " + binary
+            installBinary(binary, file('include'))
         }
     }
 }

@@ -42,10 +42,19 @@ model {
                 targetPlatform 'x64'
             }
             
+            project.ext.binaries = []
+            
             binaries.withType(SharedLibraryBinarySpec) { binary ->
                 def slf = binary.sharedLibraryFile
                 def newfile = new File(new File(file(sharedArtifactDir), getPlatformPath(binary)), slf.name)
                 binary.sharedLibraryFile = newfile
+                
+                if (binary.targetPlatform.operatingSystem.isCurrent()) {
+                    if (project.hasProperty("32") && !binary.targetPlatform.architecture.name.contains("64"))
+                        project.ext.binaries << binary.sharedLibraryFile
+                    else if (!project.hasProperty("32") && binary.targetPlatform.architecture.name.contains("64"))
+                        project.ext.binaries << binary.sharedLibraryFile
+                }
             }
             
             binaries.all {
@@ -114,6 +123,15 @@ task libraryExport << {
     copy {
         from sharedArtifactDir
         into exportDir
+    }
+}
+
+task install() {
+    doLast {
+        binaries.each { binary ->
+            println "Installing Binary: " + binary
+            installBinary(binary, file("$nativeDir/include"))
+        }
     }
 }
 
