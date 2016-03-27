@@ -18,6 +18,22 @@ public class Pathfinder {
     }
 
     /**
+     * Convert radians to degrees. This is included here for static imports.
+     */
+    public static double r2d(double radians) {
+        return Math.toDegrees(radians);
+    }
+
+    /**
+     * Bound an angle (in degrees) to -180 to 180 degrees.
+     */
+    public static double boundHalfDegrees(double angle_degrees) {
+        while (angle_degrees >= 180.0) angle_degrees -= 360.0;
+        while (angle_degrees < -180.0) angle_degrees += 360.0;
+        return angle_degrees;
+    }
+
+    /**
      * Generate a motion profile trajectory using the given waypoints and configuration.
      * @param waypoints     An array of waypoints (setpoints) for the trajectory path to intersect
      * @param config        The configuration of the trajectory, including max velocity, acceleration, jerk

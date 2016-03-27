@@ -19,6 +19,8 @@ public class EncoderFollower {
         this.trajectory = traj;
     }
 
+    public EncoderFollower() { }
+
     public void setTrajectory(Trajectory traj) {
         this.trajectory = traj;
         reset();
@@ -56,6 +58,10 @@ public class EncoderFollower {
 
             return calculated_value;
         } else return 0;
+    }
+
+    public double getHeading() {
+        return heading;
     }
 
     public Trajectory.Segment getSegment() {

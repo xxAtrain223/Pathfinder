@@ -22,6 +22,10 @@ Tank Drive:
 Swerve Drive:  
 ![](img/swerve.png)
 
+## Part of the FIRST Robotics Competition?
+We've got some Wiki Entries for you. After you've read this README, go to the [wiki](https://github.com/JacisNonsense/Pathfinder/wiki/) 
+to learn more about how to integrate Pathfinder into your FRC application!
+
 ## Building
 To build the project, run the following command:
 ```
