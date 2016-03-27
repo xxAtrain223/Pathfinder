@@ -3,7 +3,7 @@ apply plugin: 'c'
 def nativeDir = 'src/native'
 def sharedArtifactDir = 'build/libs/pathfinderjava/shared/platform'
 def exportDir = 'src/main/resources'
-def armJNI = '~/arm-linux'
+def armJNI = '../arm-linux'
 if (project.hasProperty('armJNI')) armJNI = project.armJNI
 
 ext.getPlatformPath = { binary ->
