@@ -19,6 +19,25 @@ double getDoubleField(JNIEnv *env, jobject obj, char *field_name) {
     return x;
 }
 
+int getIntField(JNIEnv *env, jobject obj, char *field_name) {
+    jclass cls = (*env)->GetObjectClass(env, obj);
+    jfieldID fid = (*env)->GetFieldID(env, cls, field_name, "I");
+    int x = (*env)->GetIntField(env, obj, fid);
+    return x;
+}
+
+void setDoubleField(JNIEnv *env, jobject obj, char *field_name, double value) {
+    jclass cls = (*env)->GetObjectClass(env, obj);
+    jfieldID fid = (*env)->GetFieldID(env, cls, field_name, "D");
+    (*env)->SetDoubleField(env, obj, fid, value);
+}
+
+void setIntField(JNIEnv *env, jobject obj, char *field_name, int value) {
+    jclass cls = (*env)->GetObjectClass(env, obj);
+    jfieldID fid = (*env)->GetFieldID(env, cls, field_name, "I");
+    (*env)->SetIntField(env, obj, fid, value);
+}
+
 void *getMethodReturn(JNIEnv *env, jobject obj, char *method_name, char *method_signature) {
     jclass cls = (*env)->GetObjectClass(env, obj);
     jmethodID mid = (*env)->GetMethodID(env, cls, method_name, method_signature);
@@ -266,4 +285,58 @@ JNIEXPORT jobjectArray JNICALL Java_jaci_pathfinder_PathfinderJNI_modifyTrajecto
     (*env)->SetObjectArrayElement(env, returnArray, 3, bra);
     
     return returnArray;
+}
+
+/*
+ * Class:     jaci_pathfinder_PathfinderJNI
+ * Method:    encoderFollow
+ * Signature: (I[Ljaci/pathfinder/Trajectory/Segment;Ljaci/pathfinder/followers/EncoderFollower/EncoderConfig;Ljaci/pathfinder/followers/EncoderFollower/FollowerContainer;)V
+ */
+JNIEXPORT void JNICALL Java_jaci_pathfinder_PathfinderJNI_encoderFollow
+  (JNIEnv *env, jclass thiscls, jint encoder_position, jobjectArray trajectory, jobject config, jobject container) {
+    
+    int length = (*env)->GetArrayLength(env, trajectory);
+    int segID = getIntField(env, container, "segment");
+    double last_error = getDoubleField(env, container, "last_error");
+    
+    EncoderFollower follower = { last_error, 0, 0, segID, 0 };
+
+    if (segID >= length) {
+        follower.finished = 1;
+        follower.output = 0;
+        
+        jobject sobj = (jobject) (*env)->GetObjectArrayElement(env, trajectory, segID - 1);
+        follower.heading = getDoubleField(env, sobj, "heading");        // Don't spazz out the gyro
+    } else {
+        jobject sobj = (jobject) (*env)->GetObjectArrayElement(env, trajectory, segID);
+        Segment s = {
+            getDoubleField(env, sobj, "dt"),
+            getDoubleField(env, sobj, "x"),
+            getDoubleField(env, sobj, "y"),
+            getDoubleField(env, sobj, "position"),
+            getDoubleField(env, sobj, "velocity"),
+            getDoubleField(env, sobj, "acceleration"),
+            getDoubleField(env, sobj, "jerk"),
+            getDoubleField(env, sobj, "heading")
+        };
+        
+        EncoderConfig c = {
+            getIntField(env, config, "initial_position"),
+            getIntField(env, config, "ticks_per_revolution"),
+            getDoubleField(env, config, "wheel_circumference"),
+            getDoubleField(env, config, "kp"),
+            getDoubleField(env, config, "ki"),
+            getDoubleField(env, config, "kd"),
+            getDoubleField(env, config, "kv"),
+            getDoubleField(env, config, "ka")
+        };
+        
+        pathfinder_follow_encoder2(c, &follower, s, length, (int)encoder_position);
+    }
+    
+    setDoubleField(env, container, "last_error", follower.last_error);
+    setDoubleField(env, container, "heading", follower.heading);
+    setDoubleField(env, container, "output", follower.output);
+    setIntField(env, container, "segment", follower.segment);
+    setIntField(env, container, "finished", follower.finished);
 }

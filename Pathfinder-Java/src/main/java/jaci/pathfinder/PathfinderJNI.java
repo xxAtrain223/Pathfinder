@@ -1,5 +1,6 @@
 package jaci.pathfinder;
 
+import jaci.pathfinder.followers.EncoderFollower;
 import jaci.pathfinder.modifiers.SwerveModifier;
 
 import java.io.*;
@@ -90,5 +91,8 @@ public class PathfinderJNI {
         return new Trajectory[] { new Trajectory(mod[0]), new Trajectory(mod[1]), new Trajectory(mod[2]), new Trajectory(mod[3]) };
     }
     public static native Trajectory.Segment[][] modifyTrajectorySwerve(Trajectory.Segment[] source, double wheelbase_width, double wheelbase_depth, SwerveModifier.Mode mode);
+
+    /** ENCODER FOLLOWERS **/
+    public static native void encoderFollow(int encoder_position, Trajectory.Segment[] trajectory, EncoderFollower.EncoderConfig config, EncoderFollower.FollowerContainer container);
 
 }

@@ -31,6 +31,14 @@ JNIEXPORT jobjectArray JNICALL Java_jaci_pathfinder_PathfinderJNI_modifyTrajecto
 JNIEXPORT jobjectArray JNICALL Java_jaci_pathfinder_PathfinderJNI_modifyTrajectorySwerve
   (JNIEnv *, jclass, jobjectArray, jdouble, jdouble, jobject);
 
+/*
+ * Class:     jaci_pathfinder_PathfinderJNI
+ * Method:    encoderFollow
+ * Signature: (I[Ljaci/pathfinder/Trajectory/Segment;Ljaci/pathfinder/followers/EncoderFollower/EncoderConfig;Ljaci/pathfinder/followers/EncoderFollower/FollowerContainer;)V
+ */
+JNIEXPORT void JNICALL Java_jaci_pathfinder_PathfinderJNI_encoderFollow
+  (JNIEnv *, jclass, jint, jobjectArray, jobject, jobject);
+
 #ifdef __cplusplus
 }
 #endif

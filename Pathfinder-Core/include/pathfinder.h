@@ -11,4 +11,6 @@
 #include "pathfinder/modifiers/tank.h"
 #include "pathfinder/modifiers/swerve.h"
 
+#include "pathfinder/followers/encoder.h"
+
 #endif
