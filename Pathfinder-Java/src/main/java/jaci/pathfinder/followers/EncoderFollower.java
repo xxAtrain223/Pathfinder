@@ -5,61 +5,65 @@ import jaci.pathfinder.Trajectory;
 
 public class EncoderFollower {
 
-    public class EncoderConfig {
-        int initial_position, ticks_per_revolution;
-        double wheel_circumference, kp, ki, kd, kv, ka;
-    }
+    int encoder_offset, encoder_tick_count;
+    double wheel_circumference;
 
-    public class FollowerContainer {
-        double last_error, heading, output;
-        int segment, finished;
-    }
+    double kp, ki, kd, kv, ka;
 
+    double last_error, heading;
+
+    int segment;
     Trajectory trajectory;
-    EncoderConfig config;
-    FollowerContainer container;
 
-    public EncoderFollower(Trajectory trajectory) {
-        this.trajectory = trajectory;
-        config = new EncoderConfig();
-        container = new FollowerContainer();
+    public EncoderFollower(Trajectory traj) {
+        this.trajectory = traj;
     }
 
-    public void setTrajectory(Trajectory trajectory) {
-        this.trajectory = trajectory;
+    public void setTrajectory(Trajectory traj) {
+        this.trajectory = traj;
         reset();
     }
 
-    public void reset() {
-        container = new FollowerContainer();
-    }
-    
     public void configurePIDVA(double kp, double ki, double kd, double kv, double ka) {
-        config.kp = kp; config.ki = ki; config.kd = kd;
-        config.kv = kv; config.ka = ka;
+        this.kp = kp; this.ki = ki; this.kd = kd;
+        this.kv = kv; this.ka = ka;
     }
 
     public void configureEncoder(int initial_position, int ticks_per_revolution, double wheel_diameter) {
-        config.initial_position = initial_position;
-        config.ticks_per_revolution = ticks_per_revolution;
-        config.wheel_circumference = Math.PI * wheel_diameter;
-    }
-    
-    public double calculate(int encoder_position) {
-        PathfinderJNI.encoderFollow(encoder_position, trajectory.segments, config, container);
-        return container.output;
+        encoder_offset = initial_position;
+        encoder_tick_count = ticks_per_revolution;
+        wheel_circumference = Math.PI * wheel_diameter;
     }
 
-    public double getOutput() {
-        return container.output;
+    public void reset() {
+        last_error = 0; segment = 0;
+    }
+
+    public double calculate(int encoder_tick) {
+        // Number of Revolutions * Wheel Circumference
+        double distance_covered = ((double)(encoder_tick - encoder_offset) / encoder_tick_count)
+                * wheel_circumference;
+        if (segment < trajectory.length()) {
+            Trajectory.Segment seg = trajectory.get(segment);
+            double error = seg.position - distance_covered;
+            double calculated_value =
+                    kp * error +                                    // Proportional
+                    kd * ((error - last_error) / seg.dt) +          // Derivative
+                    (kv * seg.velocity + ka * seg.acceleration);    // V and A Terms
+            last_error = error;
+            heading = seg.heading;
+            segment++;
+
+            return calculated_value;
+        } else return 0;
     }
 
     public Trajectory.Segment getSegment() {
-        return trajectory.get(container.segment);
+        return trajectory.get(segment);
     }
-    
+
     public boolean isFinished() {
-        return container.finished == 1;
+        return segment >= trajectory.length();
     }
 
 }

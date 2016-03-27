@@ -92,7 +92,4 @@ public class PathfinderJNI {
     }
     public static native Trajectory.Segment[][] modifyTrajectorySwerve(Trajectory.Segment[] source, double wheelbase_width, double wheelbase_depth, SwerveModifier.Mode mode);
 
-    /** ENCODER FOLLOWERS **/
-    public static native void encoderFollow(int encoder_position, Trajectory.Segment[] trajectory, EncoderFollower.EncoderConfig config, EncoderFollower.FollowerContainer container);
-
 }
