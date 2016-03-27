@@ -78,14 +78,10 @@ project.ext.installBinary = { binary, headers ->
             executable "install"
             args "-m", "0755", "-d", "$prefix/include"
         }
-        
-        def arrg = ["-m", "0644"]
-        arrg += allHeaders
-        arrg += "$prefix/include"
-        
+       
         exec {
-            executable "install"
-            args = arrg
+            executable "cp"
+            args "-r", "${headers.absolutePath}/", "$prefix/include"
         }
     }
     
