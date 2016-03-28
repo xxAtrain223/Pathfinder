@@ -1,5 +1,7 @@
 package jaci.pathfinder;
 
+import java.io.File;
+
 /**
  * The main class of the Pathfinder Library. The Pathfinder Library is used for Motion Profile and Trajectory Generation.
  *
@@ -42,6 +44,42 @@ public class Pathfinder {
      */
     public static Trajectory generate(Waypoint[] waypoints, Trajectory.Config config) {
         return PathfinderJNI.generateTrajectory(waypoints, config);
+    }
+
+    /**
+     * Write the Trajectory to a Binary (non human readable) file
+     * @param file          The file to write to
+     * @param trajectory    The trajectory to write
+     */
+    public static void writeToFile(File file, Trajectory trajectory) {
+        PathfinderJNI.trajectorySerialize(trajectory.segments, file.getAbsolutePath());
+    }
+
+    /**
+     * Read a Trajectory from a Binary (non human readable) file
+     * @param file          The file to read from
+     * @return              The trajectory that was read from file
+     */
+    public static Trajectory readFromFile(File file) {
+        return new Trajectory(PathfinderJNI.trajectoryDeserialize(file.getAbsolutePath()));
+    }
+
+    /**
+     * Write the Trajectory to a CSV File
+     * @param file          The file to write to
+     * @param trajectory    The trajectory to write
+     */
+    public static void writeToCSV(File file, Trajectory trajectory) {
+        PathfinderJNI.trajectorySerializeCSV(trajectory.segments, file.getAbsolutePath());
+    }
+
+    /**
+     * Read a Trajectory from a CSV File
+     * @param file          The file to read from
+     * @return              The trajectory that was read from file
+     */
+    public static Trajectory readFromCSV(File file) {
+        return new Trajectory(PathfinderJNI.trajectoryDeserializeCSV(file.getAbsolutePath()));
     }
 
 }
