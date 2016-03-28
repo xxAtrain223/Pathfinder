@@ -286,3 +286,73 @@ JNIEXPORT jobjectArray JNICALL Java_jaci_pathfinder_PathfinderJNI_modifyTrajecto
     
     return returnArray;
 }
+
+/*
+ * Class:     jaci_pathfinder_PathfinderJNI
+ * Method:    trajectorySerialize
+ * Signature: ([Ljaci/pathfinder/Trajectory/Segment;Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_jaci_pathfinder_PathfinderJNI_trajectorySerialize
+  (JNIEnv *env, jclass thisCls, jobjectArray trajectory, jstring filename) {
+    
+    int length = (*env)->GetArrayLength(env, trajectory);
+    Segment *segs = malloc(length * sizeof(Segment));
+    
+    int i;
+    for (i = 0; i < length; i++) {
+        jobject sobj = (jobject) (*env)->GetObjectArrayElement(env, trajectory, i);
+        Segment s = {
+            getDoubleField(env, sobj, "dt"),
+            getDoubleField(env, sobj, "x"),
+            getDoubleField(env, sobj, "y"),
+            getDoubleField(env, sobj, "position"),
+            getDoubleField(env, sobj, "velocity"),
+            getDoubleField(env, sobj, "acceleration"),
+            getDoubleField(env, sobj, "jerk"),
+            getDoubleField(env, sobj, "heading")
+        };
+        segs[i] = s;
+    }
+    
+    const char *path;
+    path = (*env)->GetStringUTFChars( env, filename, 0 ) ;
+    FILE *fp = fopen(path, "wb");
+    
+    pathfinder_serialize(fp, segs, length);
+    
+    fclose(fp);
+    (*env)->ReleaseStringUTFChars(env, filename, path);
+}
+
+/*
+ * Class:     jaci_pathfinder_PathfinderJNI
+ * Method:    trajectoryDeserialize
+ * Signature: (Ljava/lang/String;)[Ljaci/pathfinder/Trajectory/Segment;
+ */
+JNIEXPORT jobjectArray JNICALL Java_jaci_pathfinder_PathfinderJNI_trajectoryDeserialize
+  (JNIEnv *env, jclass thisCls, jstring filename) {
+    const char *path;
+    path = (*env)->GetStringUTFChars( env, filename, NULL ) ;
+    FILE *fp = fopen(path, "rb");
+    
+    int length = pathfinder_deserialize_pre(fp);
+    Segment *segs = malloc(length * sizeof(Segment));
+    pathfinder_deserialize(fp, segs, length);
+    
+    fclose(fp);
+    (*env)->ReleaseStringUTFChars(env, filename, path);
+    
+    jclass cls = (*env)->FindClass(env, "jaci/pathfinder/Trajectory$Segment");
+    jmethodID constructor = (*env)->GetMethodID(env, cls, "<init>", "(DDDDDDDD)V");
+    jobjectArray arr = (*env)->NewObjectArray(env, length, cls, NULL);
+    
+    int i;
+    for (i = 0; i < length; i++) {
+        Segment s = segs[i];
+        jobject js = (*env)->NewObject(env, cls, constructor, s.dt, s.x, s.y, s.position, s.velocity, s.acceleration, s.jerk, s.heading);
+        (*env)->SetObjectArrayElement(env, arr, i, js);
+    }
+    
+    free(segs);
+    return arr;
+}

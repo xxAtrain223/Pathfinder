@@ -12,5 +12,8 @@
 #include "pathfinder/modifiers/swerve.h"
 
 #include "pathfinder/followers/encoder.h"
+#include "pathfinder/followers/distance.h"
+
+#include "pathfinder/io.h"
 
 #endif

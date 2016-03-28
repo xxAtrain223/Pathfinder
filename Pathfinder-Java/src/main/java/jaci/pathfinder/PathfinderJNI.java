@@ -92,4 +92,7 @@ public class PathfinderJNI {
     }
     public static native Trajectory.Segment[][] modifyTrajectorySwerve(Trajectory.Segment[] source, double wheelbase_width, double wheelbase_depth, SwerveModifier.Mode mode);
 
+    public static native void trajectorySerialize(Trajectory.Segment[] source, String filename);
+    public static native Trajectory.Segment[] trajectoryDeserialize(String filename);
+
 }

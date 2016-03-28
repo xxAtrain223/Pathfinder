@@ -65,6 +65,12 @@ public class Trajectory {
         public Segment copy() {
             return new Segment(dt, x, y, position, velocity, acceleration, jerk, heading);
         }
+
+        public boolean equals(Segment seg) {
+            return  seg.dt == dt && seg.x == x && seg.y == y &&
+                    seg.position == position && seg.velocity == velocity &&
+                    seg.acceleration == acceleration && seg.jerk == jerk && seg.heading == heading;
+        }
     }
 
     /**

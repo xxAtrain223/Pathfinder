@@ -31,6 +31,22 @@ JNIEXPORT jobjectArray JNICALL Java_jaci_pathfinder_PathfinderJNI_modifyTrajecto
 JNIEXPORT jobjectArray JNICALL Java_jaci_pathfinder_PathfinderJNI_modifyTrajectorySwerve
   (JNIEnv *, jclass, jobjectArray, jdouble, jdouble, jobject);
 
+/*
+ * Class:     jaci_pathfinder_PathfinderJNI
+ * Method:    trajectorySerialize
+ * Signature: ([Ljaci/pathfinder/Trajectory/Segment;Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_jaci_pathfinder_PathfinderJNI_trajectorySerialize
+  (JNIEnv *, jclass, jobjectArray, jstring);
+
+/*
+ * Class:     jaci_pathfinder_PathfinderJNI
+ * Method:    trajectoryDeserialize
+ * Signature: (Ljava/lang/String;)[Ljaci/pathfinder/Trajectory/Segment;
+ */
+JNIEXPORT jobjectArray JNICALL Java_jaci_pathfinder_PathfinderJNI_trajectoryDeserialize
+  (JNIEnv *, jclass, jstring);
+
 #ifdef __cplusplus
 }
 #endif
