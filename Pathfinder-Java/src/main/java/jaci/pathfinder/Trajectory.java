@@ -71,6 +71,16 @@ public class Trajectory {
                     seg.position == position && seg.velocity == velocity &&
                     seg.acceleration == acceleration && seg.jerk == jerk && seg.heading == heading;
         }
+
+        public boolean fuzzyEquals(Segment seg) {
+            return  ae(seg.dt, dt) && ae(seg.x, x) && ae(seg.y, y) && ae(seg.position, position) &&
+                    ae(seg.velocity, velocity) && ae(seg.acceleration, acceleration) && ae(seg.jerk, jerk) &&
+                    ae(seg.heading, heading);
+        }
+
+        private boolean ae(double one, double two) {
+            return Math.abs(one - two) < 0.0001;        // Really small value
+        }
     }
 
     /**

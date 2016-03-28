@@ -47,6 +47,22 @@ JNIEXPORT void JNICALL Java_jaci_pathfinder_PathfinderJNI_trajectorySerialize
 JNIEXPORT jobjectArray JNICALL Java_jaci_pathfinder_PathfinderJNI_trajectoryDeserialize
   (JNIEnv *, jclass, jstring);
 
+/*
+ * Class:     jaci_pathfinder_PathfinderJNI
+ * Method:    trajectorySerializeCSV
+ * Signature: ([Ljaci/pathfinder/Trajectory/Segment;Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_jaci_pathfinder_PathfinderJNI_trajectorySerializeCSV
+  (JNIEnv *, jclass, jobjectArray, jstring);
+
+/*
+ * Class:     jaci_pathfinder_PathfinderJNI
+ * Method:    trajectoryDeserializeCSV
+ * Signature: (Ljava/lang/String;)[Ljaci/pathfinder/Trajectory/Segment;
+ */
+JNIEXPORT jobjectArray JNICALL Java_jaci_pathfinder_PathfinderJNI_trajectoryDeserializeCSV
+  (JNIEnv *, jclass, jstring);
+
 #ifdef __cplusplus
 }
 #endif

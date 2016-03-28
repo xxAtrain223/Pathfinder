@@ -100,17 +100,15 @@ void pathfinder_serialize(FILE *fp, Segment *trajectory, int trajectory_length) 
     }
 }
 
-int pathfinder_deserialize_pre(FILE *fp) {
+int pathfinder_deserialize(FILE *fp, Segment *target) {
     char buf_1[4];
     fread(buf_1, 1, 4, fp);
-    return bytesToInt(buf_1);
-}
-
-void pathfinder_deserialize(FILE *fp, Segment *target, int trajectory_length) {
+    int length = bytesToInt(buf_1);
+    
     char buf[8];
     
     int i;
-    for (i = 0; i < trajectory_length; i++) {
+    for (i = 0; i < length; i++) {
         fread(buf, 1, 8, fp);
         double dt = bytesToDouble(buf);
                 
@@ -138,4 +136,54 @@ void pathfinder_deserialize(FILE *fp, Segment *target, int trajectory_length) {
         Segment s = { dt, x, y, position, velocity, acceleration, jerk, heading };
         target[i] = s;
     }
+    return length;
+}
+
+void pathfinder_serialize_csv(FILE *fp, Segment *trajectory, int trajectory_length) {
+    fputs(CSV_LEADING_STRING, fp);
+    
+    int i;
+    for (i = 0; i < trajectory_length; i++) {
+        char buf[1024];
+        Segment s = trajectory[i];
+        sprintf(buf, "%f,%f,%f,%f,%f,%f,%f,%f\n", s.dt, s.x, s.y, s.position, s.velocity, s.acceleration, s.jerk, s.heading);
+        fputs(buf, fp);
+    }
+}
+
+int pathfinder_deserialize_csv(FILE *fp, Segment *target) {
+    char line[1024];
+    int line_n = 0;
+    int seg_n = 0;
+    while (fgets(line, 1024, fp)) {
+        char *tmp = strdup(line);
+        if (line_n == 0) { } // Do nothing, first line specifies the headers
+        
+        char *record;
+        record = strtok(tmp, ",");
+        double dt   = strtod(record, NULL);
+        record = strtok(NULL, ",");
+        double x    = strtod(record, NULL);
+        record = strtok(NULL, ",");
+        double y    = strtod(record, NULL);
+        record = strtok(NULL, ",");
+        double pos  = strtod(record, NULL);
+        record = strtok(NULL, ",");
+        double vel  = strtod(record, NULL);
+        record = strtok(NULL, ",");
+        double acc  = strtod(record, NULL);
+        record = strtok(NULL, ",");
+        double jerk = strtod(record, NULL);
+        record = strtok(NULL, ",");
+        double head = strtod(record, NULL);
+        
+        Segment s = { dt, x, y, pos, vel, acc, jerk, head };
+        target[seg_n] = s;
+        
+        free(tmp);
+        
+        if (line_n != 0) seg_n++;
+        line_n++;
+    }
+    return seg_n;
 }

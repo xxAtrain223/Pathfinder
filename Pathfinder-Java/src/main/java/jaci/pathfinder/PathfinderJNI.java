@@ -95,4 +95,7 @@ public class PathfinderJNI {
     public static native void trajectorySerialize(Trajectory.Segment[] source, String filename);
     public static native Trajectory.Segment[] trajectoryDeserialize(String filename);
 
+    public static native void trajectorySerializeCSV(Trajectory.Segment[] source, String filename);
+    public static native Trajectory.Segment[] trajectoryDeserializeCSV(String filename);
+
 }
