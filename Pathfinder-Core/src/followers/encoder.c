@@ -2,7 +2,15 @@
 
 double pathfinder_follow_encoder(EncoderConfig c, EncoderFollower *follower, Segment *trajectory, int trajectory_length, int encoder_tick) {
     int segment = follower->segment;
-    pathfinder_follow_encoder2(c, follower, trajectory[segment], trajectory_length, encoder_tick);
+    if (segment >= trajectory_length) {
+        follower->finished = 1;
+        follower->output = 0.0;
+        Segment last = trajectory[trajectory_length - 1];
+        follower->heading = last.heading;
+        return 0.0;
+    } else {
+        return pathfinder_follow_encoder2(c, follower, trajectory[segment], trajectory_length, encoder_tick);
+    }
 }
 
 double pathfinder_follow_encoder2(EncoderConfig c, EncoderFollower *follower, Segment s, int trajectory_length, int encoder_tick) {
