@@ -44,10 +44,10 @@ pathfinder_prepare(points, POINT_LENGTH, FIT_HERMITE_CUBIC, PATHFINDER_SAMPLES_H
 int length = candidate.length;
 
 // Array of Segments (the trajectory points) to store the trajectory in
-Segment trajectory[length];
+Segment *trajectory = malloc(length * sizeof(Segment));
 
 // Generate the trajectory
-pathfinder_generate(&candidate, seg);
+pathfinder_generate(&candidate, trajectory);
 ```
 
 ### Using the Segments
@@ -64,6 +64,8 @@ for (i = 0; i < length; i++) {
     printf("Heading (radians): %f\n", s.heading);
 }
 ```
+
+Don't forget to free the `trajectory`!
 
 ## Modifying your Trajectory
 ### Tank Drive

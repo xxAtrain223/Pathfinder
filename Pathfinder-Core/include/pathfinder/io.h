@@ -7,8 +7,6 @@
 
 #define CSV_LEADING_STRING "dt,x,y,position,velocity,acceleration,jerk,heading\n"
 
-const char* getCSVField(char* line, int num);
-
 void intToBytes(int n, char *bytes);
 int bytesToInt(char *bytes);
 void longToBytes(unsigned long long n, char *bytes);

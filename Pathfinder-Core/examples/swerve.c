@@ -16,9 +16,9 @@ int main() {
     pathfinder_prepare(points, POINT_LENGTH, FIT_HERMITE_CUBIC, PATHFINDER_SAMPLES_HIGH, 0.001, 15.0, 10.0, 60.0, &candidate);
 
     int length = candidate.length;
-    Segment trajectory[length];
+    Segment *trajectory = malloc(length * sizeof(Segment));
     
-    pathfinder_generate(&candidate, seg);
+    pathfinder_generate(&candidate, trajectory);
     
     Segment frontLeft[length];
     Segment frontRight[length];
@@ -33,5 +33,7 @@ int main() {
     pathfinder_modify_swerve(trajectory, length, frontLeft, frontRight, backLeft, backRight, wheelbase_width, wheelbase_depth, mode);
     
     // Do something with the trajectories...
+    
+    free(trajectory);
     return 0;
 }

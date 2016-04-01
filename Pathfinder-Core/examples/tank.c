@@ -16,9 +16,9 @@ int main() {
     pathfinder_prepare(points, POINT_LENGTH, FIT_HERMITE_CUBIC, PATHFINDER_SAMPLES_HIGH, 0.001, 15.0, 10.0, 60.0, &candidate);
 
     int length = candidate.length;
-    Segment trajectory[length];
+    Segment *trajectory = malloc(length * sizeof(Segment));
     
-    pathfinder_generate(&candidate, seg);
+    pathfinder_generate(&candidate, trajectory);
     
     Segment leftTrajectory[length];
     Segment rightTrajectory[length];
@@ -28,5 +28,7 @@ int main() {
     pathfinder_modify_tank(trajectory, length, leftTrajectory, rightTrajectory, wheelbase_width);
 
     // Do something with the trajectories...
+    
+    free(trajectory);
     return 0;
 }
