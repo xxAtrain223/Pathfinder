@@ -16,7 +16,7 @@ void pathfinder_modify_tank(Segment *original, int length, Segment *left_traj, S
         left.y = seg.y + (w * cos_angle);
         
         if (i > 0) {
-            Segment last = original[i - 1];
+            Segment last = left_traj[i - 1];
             double distance = sqrt(
                 (left.x - last.x) * (left.x - last.x)
                 + (left.y - last.y) * (left.y - last.y)
@@ -32,7 +32,7 @@ void pathfinder_modify_tank(Segment *original, int length, Segment *left_traj, S
         right.y = seg.y - (w * cos_angle);
         
         if (i > 0) {
-            Segment last = original[i - 1];
+            Segment last = right_traj[i - 1];
             double distance = sqrt(
                 (right.x - last.x) * (right.x - last.x)
                 + (right.y - last.y) * (right.y - last.y)
