@@ -1,9 +1,10 @@
 cmake_minimum_required(VERSION 3.0)
 project(Pathfinder)
 
-file(GLOB_RECURSE srcs src/*.c)
-add_library(pathfinder ${srcs})
-target_include_directories(pathfinder PUBLIC include)
+file(GLOB_RECURSE pathfinder_SOURCES src/*.c)
+add_library(pathfinder ${pathfinder_SOURCES})
+set(Pathfinder_INCLUDE_DIRS include)
+target_include_directories(pathfinder PUBLIC ${Pathfinder_INCLUDE_DIRS})
 
 function(pathfinder_example name)
     add_executable(pathfinder_example_${name} examples/${name}.c)
