@@ -3,7 +3,7 @@
 int main() {
     int POINT_LENGTH = 3;
 
-    Waypoint points[POINT_LENGTH];
+    Waypoint* points = (Waypoint*)malloc(sizeof(Waypoint) * POINT_LENGTH);
 
     Waypoint p1 = { -4, -1, d2r(45) };      // Waypoint @ x=-4, y=-1, exit angle=45 degrees
     Waypoint p2 = { -1, 2, 0 };             // Waypoint @ x=-1, y= 2, exit angle= 0 radians
@@ -20,10 +20,10 @@ int main() {
     
     pathfinder_generate(&candidate, trajectory);
     
-    Segment frontLeft[length];
-    Segment frontRight[length];
-    Segment backLeft[length];
-    Segment backRight[length];
+    Segment *frontLeft = (Segment *)malloc(length * sizeof(Segment));
+    Segment *frontRight = (Segment *)malloc(length * sizeof(Segment));
+    Segment *backLeft = (Segment *)malloc(length * sizeof(Segment);
+    Segment *backRight = (Segment *)malloc(length * sizeof(Segment));
     
     double wheelbase_width = 0.6;
     double wheelbase_depth = 0.5;
