@@ -1,79 +1,107 @@
-# Pathfinder
-Cross-Platform, Multi-Use Motion Profiling and Trajectory Generation.
+# Pathfinder C Core Library
+This is the C code for the core of the 'Pathfinder' motion profiling library. This library can be used in any C application for quick and easy generation of
+motion profiles and trajectories.
 
-Pathfinder is a library for generating Motion Profiles, a way to smoothly fit and follow a trajectory based upon 
-given waypoints. Currently, both a C and Java API are available, but can be applied to almost any application.
+## Using the Library
+Full examples are provided under `examples/`
 
-An example profile is given below, with the waypoints:  
-1) X = -4, Y = -1, Angle = -45 degrees  
-2) X = -2, Y = -2, Angle = 0  
-3) X = 0,  Y = 0,  Angle = 0
-
-The Graph on top is the X/Y position, and the Graph on the bottom is the Velocity.  
-![](img/trajectory.png)
-
-## Modifiers
-Pathfinder supports Modifiers. Modifiers are a way to manipulate a trajectory with a given rule.  
-Pathfinder supports Tank and Swerve Drive modifiers.  
-
-Tank Drive:  
-![](img/tank.png)
-
-Swerve Drive:  
-![](img/swerve.png)
-
-## Part of the FIRST Robotics Competition?
-We've got some Wiki Entries for you. After you've read this README, go to the [wiki](https://github.com/JacisNonsense/Pathfinder/wiki/) 
-to learn more about how to integrate Pathfinder into your FRC application!
-
-## Building
-To build the project, run the following command:
-```
-./gradlew build
-./gradlew assemble
+### Includes
+```c
+#include <pathfinder.h>
 ```
 
-To build the C code only:
-```
-./gradlew :Pathfinder-Core:build
+### Creating some Waypoints
+```c
+int POINT_LENGTH = 3;
+
+Waypoint points[POINT_LENGTH];
+
+Waypoint p1 = { -4, -1, d2r(45) };      // Waypoint @ x=-4, y=-1, exit angle=45 degrees
+Waypoint p2 = { -1, 2, 0 };             // Waypoint @ x=-1, y= 2, exit angle= 0 radians
+Waypoint p3 = {  2, 4, 0 };             // Waypoint @ x= 2, y= 4, exit angle= 0 radians
+points[0] = p1;
+points[1] = p2;
+points[2] = p3;
 ```
 
-To build the Java code:
-```
-./gradlew :Pathfinder-Java:build
-./gradlew :Pathfinder-Java:assemble
-```
+### Generating the Trajectory
+```c
+TrajectoryCandidate candidate;
 
-This will build for both the x64 and x86 architecture for your platform. To cross compile for ARM, do the following:
-```
-./gradlew build -Parm -PcompilerPrefix=arm-linux-gnueabi
-./gradlew assemble
-```
+// Prepare the Trajectory for Generation.
+//
+// Arguments: 
+// Fit Function:        FIT_HERMITE_CUBIC or FIT_HERMITE_QUINTIC
+// Sample Count:        PATHFINDER_SAMPLES_HIGH (100 000)
+//                      PATHFINDER_SAMPLES_LOW  (10 000)
+//                      PATHFINDER_SAMPLES_FAST (1 000)
+// Time Step:           0.001 Seconds
+// Max Velocity:        15 m/s
+// Max Acceleration:    10 m/s/s
+// Max Jerk:            60 m/s/s/s
+pathfinder_prepare(points, POINT_LENGTH, FIT_HERMITE_CUBIC, PATHFINDER_SAMPLES_HIGH, 0.001, 15.0, 10.0, 60.0, &candidate);
 
-## Installing on your Architecture
-If your OS or Architecture doesn't fall under the prebuilt binaries that are available with the library, you can 
-install pathfinder's native binaries onto your local system manually. This will allow you to include the library
-in any project you want
+int length = candidate.length;
 
-64-Bit
-```java
-./gradlew install
-```
+// Array of Segments (the trajectory points) to store the trajectory in
+Segment *trajectory = malloc(length * sizeof(Segment));
 
-32-Bit
-```java
-./gradlew install -P32
-```
-
-If you want to change the prefix location (by default it is `/usr/local`), you can pass the `prefix` property:
-```java
-./gradlew install -Pprefix=<your prefix location>
+// Generate the trajectory
+pathfinder_generate(&candidate, trajectory);
 ```
 
-## Usage
-To see the usage for each language variation of the API, see the README in their folder.
+### Using the Segments
+```c
+int i;
+for (i = 0; i < length; i++) {
+    Segment s = trajectory[i];
+    printf("Time Step: %f\n", s.dt);
+    printf("Coords: (%f, %f)\n", s.x, s.y);
+    printf("Position (Distance): %f\n", s.position);
+    printf("Velocity: %f\n", s.velocity);
+    printf("Acceleration: %f\n", s.acceleration);
+    printf("Jerk (Acceleration per Second): %f\n", s.jerk);
+    printf("Heading (radians): %f\n", s.heading);
+}
+```
 
-| Language | Folder |
-| -------- | ------ |
-| C        | [Pathfinder-Core](Pathfinder-Core/) |
-| Java     | [Pathfinder-Java](Pathfinder-Java/) |
+Don't forget to free the `trajectory`!
+
+## Modifying your Trajectory
+### Tank Drive
+```c
+Segment leftTrajectory[length];
+Segment rightTrajectory[length];
+
+// The distance between the left and right sides of the wheelbase is 0.6m
+double wheelbase_width = 0.6;
+
+// Generate the Left and Right trajectories of the wheelbase using the 
+// originally generated trajectory
+pathfinder_modify_tank(trajectory, length, leftTrajectory, rightTrajectory, wheelbase_width);
+```
+
+### Swerve Drive
+```c
+// Output Trajectories
+Segment frontLeft[length];
+Segment frontRight[length];
+Segment backLeft[length];
+Segment backRight[length];
+
+// The distance between the left and right sides of the wheelbase is 0.6m
+double wheelbase_width = 0.6;
+
+// The distance between the front and back sides of the wheelbase is 0.5m
+double wheelbase_depth = 0.5;
+
+// The swerve mode to generate will be the 'default' mode, where the robot
+// will constantly be facing forward and 'sliding' sideways to follow a
+// curved path.
+SWERVE_MODE mode = SWERVE_DEFAULT;
+
+// Generate the trajectories of each of the 4 swerve wheels using the 
+// originally generated trajectory
+pathfinder_modify_swerve(trajectory, length, frontLeft, frontRight, 
+        backLeft, backRight, wheelbase_width, wheelbase_depth, mode);
+```

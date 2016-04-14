@@ -3,7 +3,7 @@
 int main() {
     int POINT_LENGTH = 3;
 
-    Waypoint points[POINT_LENGTH];
+    Waypoint *points = (Waypoint*)malloc(sizeof(Waypoint) * POINT_LENGTH);
 
     Waypoint p1 = { -4, -1, d2r(45) };      // Waypoint @ x=-4, y=-1, exit angle=45 degrees
     Waypoint p2 = { -1, 2, 0 };             // Waypoint @ x=-1, y= 2, exit angle= 0 radians
@@ -20,14 +20,7 @@ int main() {
     
     pathfinder_generate(&candidate, trajectory);
     
-    Segment leftTrajectory[length];
-    Segment rightTrajectory[length];
-    
-    double wheelbase_width = 0.6;
-
-    pathfinder_modify_tank(trajectory, length, leftTrajectory, rightTrajectory, wheelbase_width);
-
-    // Do something with the trajectories...
+    // Do something with the trajectory...
     
     free(trajectory);
     return 0;

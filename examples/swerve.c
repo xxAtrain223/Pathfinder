@@ -3,7 +3,7 @@
 int main() {
     int POINT_LENGTH = 3;
 
-    Waypoint points[POINT_LENGTH];
+    Waypoint* points = (Waypoint*)malloc(sizeof(Waypoint) * POINT_LENGTH);
 
     Waypoint p1 = { -4, -1, d2r(45) };      // Waypoint @ x=-4, y=-1, exit angle=45 degrees
     Waypoint p2 = { -1, 2, 0 };             // Waypoint @ x=-1, y= 2, exit angle= 0 radians
@@ -20,7 +20,19 @@ int main() {
     
     pathfinder_generate(&candidate, trajectory);
     
-    // Do something with the trajectory...
+    Segment *frontLeft = (Segment *)malloc(length * sizeof(Segment));
+    Segment *frontRight = (Segment *)malloc(length * sizeof(Segment));
+    Segment *backLeft = (Segment *)malloc(length * sizeof(Segment);
+    Segment *backRight = (Segment *)malloc(length * sizeof(Segment));
+    
+    double wheelbase_width = 0.6;
+    double wheelbase_depth = 0.5;
+    
+    SWERVE_MODE mode = SWERVE_DEFAULT;
+
+    pathfinder_modify_swerve(trajectory, length, frontLeft, frontRight, backLeft, backRight, wheelbase_width, wheelbase_depth, mode);
+    
+    // Do something with the trajectories...
     
     free(trajectory);
     return 0;

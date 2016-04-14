@@ -2,7 +2,6 @@
 *.o
 *.ko
 *.obj
-*.elf
 
 # Precompiled Headers
 *.gch
@@ -16,13 +15,8 @@
 *.x86_64
 *.hex
 
-# Debug files
-*.dSYM/
-Pathfinder-Java/build/
-Pathfinder-Java/out/
-*.csv
-Pathfinder-Java/.gradle/
-Pathfinder-Core/build/
-.gradle/
-out/
-.idea
+# Libraries
+*.a
+*.so
+*.lib
+*.dll
