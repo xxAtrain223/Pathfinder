@@ -6,8 +6,8 @@ int pathfinder_prepare(Waypoint *path, int path_length, void (*fit)(Waypoint,Way
         double max_velocity, double max_acceleration, double max_jerk, TrajectoryCandidate *cand) {
     if (path_length < 2) return -1;
     
-    cand->saptr = malloc((path_length - 1) * sizeof(Spline));
-    cand->laptr = malloc((path_length - 1) * sizeof(double));
+    cand->saptr = (Spline *)malloc((path_length - 1) * sizeof(Spline));
+    cand->laptr = (double *)malloc((path_length - 1) * sizeof(double));
     double totalLength = 0;
     
     int i;
